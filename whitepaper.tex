@@ -1,7 +1,31 @@
 \documentclass[12pt, letterpaper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
+\usepackage{glossaries}
+
 \geometry{ margin=1in }
+
+\makeglossaries
+
+\newglossaryentry{ASIC}
+{
+    name=ASIC,
+    description={Application Specific Integrated Circuit. Often used to mine
+    cryptocurrencies, the most prominent being bitcoin}
+}
+
+\newglossaryentry{segwit}
+{
+    name=Segwit,
+    description={Freeing block size limit by segragating signature (witness)
+    data}
+}
+
+\newglossaryentry{mempool}
+{
+    name=Mempool,
+    description={Pool of all entries that want to be included in a block}
+}
 
 \title{
     PADLOCK \\
@@ -111,7 +135,7 @@ The issue, is that hosting a full node can start to take a lot of disk space,
 and bandwidth. At the time of writing this, the bitcoin blockchain is 310
 gigabytes. It grows at approximately 200 megabytes per day when at around max
 capacity. The block size is capped out at around 1.3-1.6 megabytes (although
-it's variable due to segwit) in order to prevent the blockchain from getting too
+it's variable due to \gls{segwit}) in order to prevent the blockchain from getting too
 big, too quick.  This causes for a bottleneck to occur, where there are more
 transactions wanting to confirm than can fit in too the next block, or even the
 next 5, 10, or at the time of writing this, 40 blocks. Because transaction fees
@@ -190,18 +214,19 @@ though they'd want to include some sort of address. A coin could then allow
 using the miner address as an input to a transaction.
 
 \section{ASIC Resistance}
-The proof of work algorithm used by PADLOCK should be ASIC resistant. ASIC
-resistance is desirable because ASIC mining greatly increases the barrier to
-entry for mining, making it inaccessible for most people, thus centralizing
-mining.
+The proof of work algorithm used by PADLOCK should be \Gls{ASIC} resistant.
+\Gls{ASIC} resistance is desirable because \Gls{ASIC} mining greatly increases
+the barrier to entry for mining, making it inaccessible for most people, thus
+centralizing mining.
 
-In order to achieve ASIC resistance, PADLOCK will cycle through different
-mining algorithms. This makes it uneconomical for miners to invest in ASICs, as
-those ASICs will become useless after PADLOCK switches algorithms. However,
-those algorithms could be being used by other cryptocurrencies, so an ASIC
-miner could simply switch to a different cryptocurrency to mine. This makes it
-important to use mining algorithms that are entirely new, or use old ones that
-are tweaked, to make them incompatible with ASICs designed for those algorithms.
+In order to achieve \Gls{ASIC} resistance, PADLOCK will cycle through different
+mining algorithms. This makes it uneconomical for miners to invest in
+\Gls{ASIC}, as those \Gls{ASIC} will become useless after PADLOCK switches
+algorithms.  However, those algorithms could be being used by other
+cryptocurrencies, so an\Gls{ASIC}  miner could simply switch to a different
+cryptocurrency to mine.  This makes it important to use mining algorithms that
+are entirely new, or use old ones that are tweaked, to make them incompatible
+with \Gls{ASIC} designed for those algorithms.
 
 \section{Privacy}
 Privacy is achieved first by pseudonymity. Transactions are associated with
@@ -224,19 +249,19 @@ drastically increases the privacy.
 
 \section{Anti-Spam Measures}
 It would be possible to execute a denial of service attack on PADLOCK by simply
-filling the mempool with meaningless entries. It would then make it increasingly
-unlikely that the legitimate entries would be added to a block. Most
-cryptocurrencies use a transaction fee, which makes it very uneconomical for an
-attacker to create enough transactions to fill the mempool. Transaction fees are
-infeasible to implement under PADLOCK however. It would involve sending many
-gigabytes (possibly in the hundreds) worth of coinfiles to the miner, which
-would take up immense bandwidth and storage.
+filling the \gls{mempool} with meaningless entries. It would then make it
+increasingly unlikely that the legitimate entries would be added to a block.
+Most cryptocurrencies use a transaction fee, which makes it very uneconomical
+for an attacker to create enough transactions to fill the \gls{mempool}.
+Transaction fees are infeasible to implement under PADLOCK however. It would
+involve sending many gigabytes (possibly in the hundreds) worth of coinfiles to
+the miner, which would take up immense bandwidth and storage.
 
 Instead, on PADLOCK each transaction must submit a proof of work. The proof of
 work algorithm for this will be very similar to hashcash. You must make an md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
 This nonce can be up to 8 bytes, and is then stored with the transaction. The N
-bits can be changed. If the mempool is filling up too quickly, nodes can
+bits can be changed. If the \gls{mempool} is filling up too quickly, nodes can
 increase the difficulty.
 
 Instead of being economically expensive to execute a DOS attack, PADLOCK makes
@@ -247,19 +272,14 @@ PADLOCK is a blockchain system designed to allow for a high throughput, and
 privacy. All the blockchain does is allow for checking if a coin has already
 been spent. This is the minimum for a functioning digital currency. Because of
 this, transactions take very little disk space, allowing a very high throughput.
-ASIC resistance is achieved through algorithm switching.  Due to transactions
-not being publicly disclosed on chain, it achieves a high level of privacy. DOS
-attacks can be countered by requiring proof of work to be submitted with each
-transaction. All this together creates a very robust base for a digital
-currency.
+\Gls{ASIC} resistance is achieved through algorithm switching.  Due to
+transactions not being publicly disclosed on chain, it achieves a high level of
+privacy. DOS attacks can be countered by requiring proof of work to be submitted
+with each transaction. All this together creates a very robust base for a
+digital currency.
 
-\section{Glossary}
+\clearpage
 
-\textbf{ASIC}: Application specific integrated circuit. 
-\newline{}
-\textbf{Segwit}: Freeing block size limit by removing signature data.
-\newline{} 
-\textbf{Mempool}: List of entries that want to be in a block.
-\newline{}
+\printglossaries
 
 \end{document}
