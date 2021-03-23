@@ -260,9 +260,15 @@ the miner, which would take up immense bandwidth and storage.
 Instead, on PADLOCK each transaction must submit a proof of work. The proof of
 work algorithm for this will be very similar to hashcash. You must make an md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
-This nonce can be up to 8 bytes, and is then stored with the transaction. The N
-bits can be changed. If the \gls{mempool} is filling up too quickly, nodes can
-increase the difficulty.
+This nonce can be up to 8 bytes, and is then stored with the entry. All of the
+work included in a block would then reduce the amount of work the miner has to
+do.
+
+\[ TotalWork = SumEntryWork + MinerWork \]
+
+This makes it so that miners have an incentive to include the entries with the
+most work in their blocks, so they don't have to do as much work to mine a
+block.
 
 Instead of being economically expensive to execute a DOS attack, PADLOCK makes
 it very computationally expensive.
