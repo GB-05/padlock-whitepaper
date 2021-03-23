@@ -39,14 +39,14 @@
 \maketitle
 
 \begin{abstract}
-    PADLOCK is a blockchain based protocol that allows for the
-    creation of a scalable and private cryptocurrency. It achieves this by only
-    storing a hash of the input and the output, only a hash of the signature, and
-    then a 8 byte anti-spam proof of work. These are the only details that need to
-    be publicly disclosed on the blockchain in order for a transaction recipient to
-    be able to verify that the coins they have received were not double spent. This
-    results in an incredibly small transaction size of only 56 bytes, allowing for
-    around 4x more throughput than bitcoin.
+    PADLOCK is a blockchain based protocol that allows for the creation of a
+    scalable and private cryptocurrency. It achieves this by only storing a hash
+    of the input and the output, and only a hash of the signature. These are the
+    only details that need to be publicly disclosed on the blockchain in order
+    for a transaction recipient to be able to verify that the coins they have
+    received were not double spent. This results in an incredibly small
+    transaction size of only 48 bytes, allowing for around 4x more throughput
+    than bitcoin.
 \end{abstract}
 
 \section{Introduction}
@@ -260,9 +260,11 @@ the miner, which would take up immense bandwidth and storage.
 Instead, on PADLOCK each transaction must submit a proof of work. The proof of
 work algorithm for this will be very similar to hashcash. You must make an md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
-This nonce can be up to 8 bytes, and is then stored with the transaction. The N
-bits can be changed. If the \gls{mempool} is filling up too quickly, nodes can
-increase the difficulty.
+This nonce can be up to 8 bytes, and is then sent with the entry to the mempool.
+Nodes have a minimum amount of work they will accept when considering whether to
+add an entry to the mempool. The work requirement can change based on the size
+of the mempool. If there are too many transactions in the mempool, nodes will up
+the amount of work required to put an entry in the mempool.
 
 Instead of being economically expensive to execute a DOS attack, PADLOCK makes
 it very computationally expensive.
