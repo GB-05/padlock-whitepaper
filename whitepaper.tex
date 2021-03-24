@@ -41,12 +41,10 @@
 \begin{abstract}
     PADLOCK is a blockchain based protocol that allows for the
     creation of a scalable and private cryptocurrency. It achieves this by only
-    storing a hash of the input and the output, only a hash of the signature, and
-    then a 8 byte anti-spam proof of work. These are the only details that need to
-    be publicly disclosed on the blockchain in order for a transaction recipient to
-    be able to verify that the coins they have received were not double spent. This
-    results in an incredibly small transaction size of only 56 bytes, allowing for
-    around 4x more throughput than bitcoin.
+    storing a hash of the input and the output, a hash of the signature, and
+    then an 8 byte anti-spam proof of work. This process is than publicly disclosed on the blockchain in order to verify that the coin is not being double-spent. 
+    This results in a minimal transaction size of only 56 bytes, allowing for
+    roughly 4x more throughput than bitcoin.
 \end{abstract}
 
 \section{Introduction}
@@ -58,9 +56,9 @@ understanding of how traditional cryptocurrencies work.
 
 \section{How Does PADLOCK Work?}
 PADLOCK uses digital signatures to facilitate the ownership of hashes. However,
-it does it differently to how most systems work. Only a hash of the signature is
+it does so differently than contemporary cryptocurrencies. Only a hash of the signature is
 stored on-chain, and the public key is left off-chain. Alongside the signature
-hash is an input hash, an output hash, and a proof of work. These four together,
+hash, is an input hash, an output hash, and a proof of work. These four aspects together,
 make up an \textit{entry}.
 
 \begin{verbatim}
@@ -77,17 +75,17 @@ struct Entry {
 
 \end{verbatim}
 
-Anyone can submit any entry to the blockchain. They do not have to provide any
+Anyone can submit an entry to the blockchain. They do not have to provide any
 sort of signature, just an object of three 16 byte arrays. This provides a base
-for creating a scalable, private, and non-double-spendable cryptocurrency.
+for creating a scalable, private, and consistent (meaning no double-spending) cryptocurrency.
 
 \section{Creating Coins on PADLOCK}
 
 \subsection{What is a Coin}
-It's important to make a distinction when talking about coins in this context.
+It's important to make a distinction between crypto and non-crypto currencies when talking about currencies in this context.
 Coins, in this context, do not refer to a unit of currency, but rather a chain
 of digital signatures. When you transfer a coin, you are appending a signature
-to this history. Each transaction has an \textit{input} and \textit{output}. The
+to this history. Each transaction has an \textit{input} and an \textit{output}. The
 input is the hash of the transaction's sender, and the output of the
 recipient(s) of the coin. The input is represented as the hash of the previous
 transaction.
@@ -108,10 +106,10 @@ struct Transaction {
 
 \end{verbatim}
 
-This coin can be split into multiple coins as well, specifying more than one
-public key as the new owner, each representing a fraction of the value of the
-original coin. If a sender sends their coin to someone, they can send a
-fraction of it to the receiver, and then the rest back to themselves, as change.
+This coin can be divided into multiple fractions of a coin, specifying more than one
+public key as the owner. Each coin is then representing a fraction of the value of the
+original coin. When a transaction occurs, the sender can send a
+fraction of the coin to the receiver, and the rest back to themselves, much like change in the real world.
 
 The \textit{coinfile} is a file that contains the history of a coin, back to
 it's minting.
@@ -127,27 +125,27 @@ the coin twice.
 \subsubsection{How it has been traditionally solved}
 Traditional cryptocurrencies solve this problem by having every coins history be
 disclosed publicly on a blockchain. Transactions are only allowed on the
-blockchain, if the sender has not already spent the output that is being used as
+blockchain if the sender has not already spent the output that is being used as
 the input.
 
 \subsubsection{The Issue With This Solution}
-The issue, is that hosting a full node can start to take a lot of disk space,
+The issue, is that hosting a full node can take a lot of disk space
 and bandwidth. At the time of writing this, the bitcoin blockchain is 310
-gigabytes. It grows at approximately 200 megabytes per day when at around max
+gigabytes. It grows at approximately 200 megabytes per day when at max
 capacity. The block size is capped out at around 1.3-1.6 megabytes (although
 it's variable due to \gls{segwit}) in order to prevent the blockchain from getting too
 big, too quick.  This causes for a bottleneck to occur, where there are more
-transactions wanting to confirm than can fit in too the next block, or even the
+transactions wanting to confirm, than can fit in too the next block, or even the
 next 5, 10, or at the time of writing this, 40 blocks. Because transaction fees
-are a market based system, due to supply and demand, the fees spike. At the time
-of writing this, a low priority transaction takes approximately 4.5 USD, and in
-order to be in the next block, you must pay around 7.5 USD in fees.
+are privy to supply and demand trends, the fees spike. At the time
+of writing this, a low priority transaction takes approximately \$4.5 USD, and in
+order to be included in the next block, you must pay around \$7.5 USD in fees.
 
 One solution that has been tried is merely increasing the block size limit.
 This means more transaction can be included in the next block, getting rid of
-the bottleneck. This however, leads to centralization issues. Due to the
+the bottleneck that is encountered in traditional cryptocurrencies. This however, leads to centralization issues. Due to the
 increasing storage and bandwidth requirements, hosting a full node will become
-infeasible for most people, and will only be done by a few.
+infeasible for the vast majority of people, and will only be aquired by a select few.
 
 A better solution is to include as many transactions as possible in the limited
 amount of space each block has. In order to do that, you have to decrease the
@@ -158,20 +156,19 @@ the PADLOCK system.
 
 \subsection{How PADLOCK Solves the Double Spend Problem}
 PADLOCK solves it by having each transaction of a coin have it's input, output,
-and signature each hashed, and then used as an entry on the PADLOCK blockchain.
+and signature hashed, and then used as an entry on the PADLOCK blockchain.
 At a basic level, one can verify whether a coin has already been spent by
-hashing the input of the transaction sent to them, and then seeing if that input
-has been used on any entries in the blockchain. If it has, you would know that
-the coin has already been spent.
+hashing the input of the transaction sent to them, and then verifying wether or not the input
+has been used on any entries in the blockchain. If it has, it would be known that
+the coin had already been spent, and the transaction would terminate.
 
-Of course, this still doesn't work. Because anyone can make an entry, a bad
-actor could make an entry that uses an unspent output that doesn't belong to
-them. A solution to this, would be to have the full signature and public key be
-part of each entry. However, this would result in transactions taking up a lot
+This still doesn't work. Because anyone can make an entry, a fraudelent body could make an entry that uses an unspent output that doesn't belong to
+them. A solution to this, however, would be to have the full signature and public key be
+apart of each entry. This would result in transactions taking up significantly
 more space (128 bytes if using ed25519).
 
 One optimization would be to remove the public key from the entries, resulting
-in a 96 byte single-input, single-output transaction. Someone could make a fake
+in a 96 byte single-input, single-output transaction. One could make a fake
 entry spending an output that doesn't belong to them, however, a receiver of a
 transaction could easily verify whether the fake transaction was real, by
 checking the signature against the public key of the sender.
@@ -182,11 +179,11 @@ transaction to the receiver, the sender would first have to scan the blockchain
 to see if there are any fake transactions spending their output(s). If there
 are, the sender would have to make a signature of each of these, and list them
 in the new transaction. The receiver would then be able to hash each of these,
-and see that these hashes don't match the ones on chain. They would the know
+and verify that these hashes don't match the ones on chain. They would then know
 that the coin(s) being sent to them have not already been spent.
 
 \subsubsection{A Potential Attack to This System, And A Solution to the Attack}
-One way to attack this would go as follows:
+One way to attack this problem would go as follows:
 
 \begin{enumerate}
     \item Make a transaction that would all of public key A's coins to you. Do
@@ -199,7 +196,7 @@ One way to attack this would go as follows:
         steal A's coins.
 \end{enumerate}
 
-In order to solve this, in order to make a transaction, you would have to make
+In order to provide a feasible solution, to make a transaction, you would have to make
 two signatures. One of the transaction itself, and then one of the entry on the
 blockchain (not including the signature hash of course). This means that
 despite having a signature for the transaction, the bad actor shown before
@@ -216,36 +213,36 @@ using the miner address as an input to a transaction.
 \section{ASIC Resistance}
 The proof of work algorithm used by PADLOCK should be \Gls{ASIC} resistant.
 \Gls{ASIC} resistance is desirable because \Gls{ASIC} mining greatly increases
-the barrier to entry for mining, making it inaccessible for most people, thus
+the barrier to entry for mining, making it inaccessible for a broader background of people, and
 centralizing mining.
 
 In order to achieve \Gls{ASIC} resistance, PADLOCK will cycle through different
 mining algorithms. This makes it uneconomical for miners to invest in
 \Gls{ASIC}, as those \Gls{ASIC} will become useless after PADLOCK switches
-algorithms.  However, those algorithms could be being used by other
+algorithms.  However, those algorithms could be utilized by other
 cryptocurrencies, so an\Gls{ASIC}  miner could simply switch to a different
 cryptocurrency to mine.  This makes it important to use mining algorithms that
 are entirely new, or use old ones that are tweaked, to make them incompatible
-with \Gls{ASIC} designed for those algorithms.
+with \Gls{ASIC} specifically designed for those algorithms.
 
 \section{Privacy}
 Privacy is achieved first by pseudonymity. Transactions are associated with
-someone's public key, rather than their real name. Of course, the issue there is
+a public key, rather than their true identity. Of course, the issue there is
 that if someone managed to trace a public key back to a real person, that
-persons transactions would be publicly known.
+persons transactions would be publicly known, making central aspects of cryptocurrencies obsolete.
 
 A common way to combat that is by sending the change of each transaction to a
 new public key. For example, say Alice sends 20 coins to Bob, from her public
 key, A. A has 30 coins belonging to it. When she sends the transaction to Bob,
 instead of sending the remaining 10 coins back to public key A, she makes a new
-public key B, and sends the 10 coins to that. To an outsider, they are unable
+public key, B, and sends the 10 coins to that. To an outsider, they are unable
 to tell which public key was Alice's, and which was Bob's.
 
 PADLOCK further combats this by not having every transaction publicly
 available. Instead, they are all in each coinfile. Someone who possess a
-coinfile would be able to see many transactions, but it would be incredibly
-hard to piece together the entire history of all the transactions. This
-drastically increases the privacy.
+coinfile would be able to see many transactions, but it would be made incredibly
+hard to piece together the entire history of all the transactions, and then link that sequence back to a public key. This
+drastically increases the extent of PADLOCK's privacy.
 
 \section{Anti-Spam Measures}
 It would be possible to execute a denial of service attack on PADLOCK by simply
@@ -253,11 +250,11 @@ filling the \gls{mempool} with meaningless entries. It would then make it
 increasingly unlikely that the legitimate entries would be added to a block.
 Most cryptocurrencies use a transaction fee, which makes it very uneconomical
 for an attacker to create enough transactions to fill the \gls{mempool}.
-Transaction fees are infeasible to implement under PADLOCK however. It would
-involve sending many gigabytes (possibly in the hundreds) worth of coinfiles to
+Transaction fees are infeasible to implement under PADLOCK, however. It would
+involve sending many gigabytes worth of coinfiles to
 the miner, which would take up immense bandwidth and storage.
 
-Instead, on PADLOCK each transaction must submit a proof of work. The proof of
+Instead, on PADLOCK, each transaction must submit a proof of work. The proof of
 work algorithm for this will be very similar to hashcash. You must make an md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
 This nonce can be up to 8 bytes, and is then stored with the transaction. The N
@@ -268,12 +265,12 @@ Instead of being economically expensive to execute a DOS attack, PADLOCK makes
 it very computationally expensive.
 
 \section{Conclusion}
-PADLOCK is a blockchain system designed to allow for a high throughput, and
-privacy. All the blockchain does is allow for checking if a coin has already
+PADLOCK is a blockchain system designed to allow for a high throughput, as well as increased
+privacy. All the blockchain does, is allow for checking if a coin has already
 been spent. This is the minimum for a functioning digital currency. Because of
 this, transactions take very little disk space, allowing a very high throughput.
 \Gls{ASIC} resistance is achieved through algorithm switching.  Due to
-transactions not being publicly disclosed on chain, it achieves a high level of
+transactions not being publicly disclosed on chain, PADLOCK achieves a high level of
 privacy. DOS attacks can be countered by requiring proof of work to be submitted
 with each transaction. All this together creates a very robust base for a
 digital currency.
