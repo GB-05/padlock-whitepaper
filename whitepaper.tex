@@ -219,14 +219,12 @@ The proof of work algorithm used by PADLOCK should be \Gls{ASIC} resistant.
 the barrier to entry for mining, making it inaccessible for most people, thus
 centralizing mining.
 
-In order to achieve \Gls{ASIC} resistance, PADLOCK will cycle through different
-mining algorithms. This makes it uneconomical for miners to invest in
-\Gls{ASIC}, as those \Gls{ASIC} will become useless after PADLOCK switches
-algorithms.  However, those algorithms could be being used by other
-cryptocurrencies, so an\Gls{ASIC}  miner could simply switch to a different
-cryptocurrency to mine.  This makes it important to use mining algorithms that
-are entirely new, or use old ones that are tweaked, to make them incompatible
-with \Gls{ASIC} designed for those algorithms.
+Furthurmore, the algorithm chosen, RandomX, is also resistant to GPU mining, as
+it is most efficiently mined on a CPU. The reason for this is to even further
+lower the barrier to entry of mining. Anyone with a computer can mine when they
+aren't using it, and don't need to have an expensive GPU. This also has the
+added benefit of being more power efficient, which will make PADLOCK more
+environmentally-friendly when compared to other cryptocurrencies.
 
 \section{Privacy}
 Privacy is achieved first by pseudonymity. Transactions are associated with
