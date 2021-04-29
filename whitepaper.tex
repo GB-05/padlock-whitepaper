@@ -162,50 +162,17 @@ and signature each hashed, and then used as an entry on the PADLOCK blockchain.
 At a basic level, one can verify whether a coin has already been spent by
 hashing the input of the transaction sent to them, and then seeing if that input
 has been used on any entries in the blockchain. If it has, you would know that
-the coin has already been spent.
+the coin has already been spent. Each entry would contain a public key, and a
+signature in order to verify the ownership of each hash.
 
-Of course, this still doesn't work. Because anyone can make an entry, a bad
-actor could make an entry that uses an unspent output that doesn't belong to
-them. A solution to this, would be to have the full signature and public key be
-part of each entry. However, this would result in transactions taking up a lot
-more space (128 bytes if using ed25519).
-
-One optimization would be to remove the public key from the entries, resulting
-in a 96 byte single-input, single-output transaction. Someone could make a fake
-entry spending an output that doesn't belong to them, however, a receiver of a
-transaction could easily verify whether the fake transaction was real, by
-checking the signature against the public key of the sender.
-
-To even further the optimization, you can replace the signature with a 16 byte
-hash of the signature. Before sending the coinfile with the appended
-transaction to the receiver, the sender would first have to scan the blockchain
-to see if there are any fake transactions spending their output(s). If there
-are, the sender would have to make a signature of each of these, and list them
-in the new transaction. The receiver would then be able to hash each of these,
-and see that these hashes don't match the ones on chain. They would the know
-that the coin(s) being sent to them have not already been spent.
-
-\subsubsection{A Potential Attack to This System, And A Solution to the Attack}
-One way to attack this would go as follows:
-
-\begin{enumerate}
-    \item Make a transaction that would all of public key A's coins to you. Do
-        not worry about the signature for now.
-    \item Put an entry on the blockchain for this transaction.
-    \item Get A to make a transaction sending you coins.
-    \item In the transaction they send you, they would have to include a
-        signature of the fake transaction you made.
-    \item You can now broadcast the fake transaction with the signature, and
-        steal A's coins.
-\end{enumerate}
-
-In order to solve this, in order to make a transaction, you would have to make
-two signatures. One of the transaction itself, and then one of the entry on the
-blockchain (not including the signature hash of course). This means that
-despite having a signature for the transaction, the bad actor shown before
-would not have a valid signature for the on-chain entry, meaning that if they
-go to send their newly acquired coins to someone, the receiver could tell that
-the sender made a fake transaction to acquire those coins.
+There are two optimizations that will be done to reduce transaction size
+further.  The first optimization is BLS Signature Aggregation. Every signature
+in the block can be combined into one single 96 byte signature. This would
+reduce a single input, single output transaction to 64 bytes (48 byte public
+key, 8 byte input hash, 8 byte output hash). The other optimization is to keep
+an array of all public keys used, and then transactions can use an index to this
+array to refer to their public key, making a single-input single-output
+transaction 16 bytes (8 byte index, 8 byte input hash, 8 byte output hash).
 
 \subsection{Issuance}
 Issuance can be done via the 256 byte miner address field in the block header.
@@ -219,14 +186,15 @@ The proof of work algorithm used by PADLOCK should be \Gls{ASIC} resistant.
 the barrier to entry for mining, making it inaccessible for most people, thus
 centralizing mining.
 
-In order to achieve \Gls{ASIC} resistance, PADLOCK will cycle through different
-mining algorithms. This makes it uneconomical for miners to invest in
-\Gls{ASIC}, as those \Gls{ASIC} will become useless after PADLOCK switches
-algorithms.  However, those algorithms could be being used by other
-cryptocurrencies, so an\Gls{ASIC}  miner could simply switch to a different
-cryptocurrency to mine.  This makes it important to use mining algorithms that
-are entirely new, or use old ones that are tweaked, to make them incompatible
-with \Gls{ASIC} designed for those algorithms.
+Furthurmore, the algorithm chosen, RandomX, is also resistant to GPU mining, as
+it is most efficiently mined on a CPU. The reason for this is to even further
+lower the barrier to entry of mining. Anyone with a computer can mine when they
+aren't using it, and don't need to have an expensive GPU. Although more research
+needs to be done on this front, CPUs are known to typically have less power
+consumption than GPUs and ASICs. This could result in less electricity being
+needed to reach a safe level of security against 51 attacks, making PADLOCK have
+the potential to be more environmentally friendly than cryptocurrencies that
+rely on ASIC or GPU mining.
 
 \section{Privacy}
 Privacy is achieved first by pseudonymity. Transactions are associated with
