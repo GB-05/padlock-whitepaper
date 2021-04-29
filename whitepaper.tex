@@ -45,7 +45,7 @@
     then a 8 byte anti-spam proof of work. These are the only details that need to
     be publicly disclosed on the blockchain in order for a transaction recipient to
     be able to verify that the coins they have received were not double spent. This
-    results in an incredibly small transaction size of only 56 bytes, allowing for
+    results in an incredibly small transaction size of only 72 bytes, allowing for
     around 4x more throughput than bitcoin.
 \end{abstract}
 
@@ -169,10 +169,11 @@ There are two optimizations that will be done to reduce transaction size
 further.  The first optimization is BLS Signature Aggregation. Every signature
 in the block can be combined into one single 96 byte signature. This would
 reduce a single input, single output transaction to 64 bytes (48 byte public
-key, 8 byte input hash, 8 byte output hash). The other optimization is to keep
-an array of all public keys used, and then transactions can use an index to this
-array to refer to their public key, making a single-input single-output
-transaction 16 bytes (8 byte index, 8 byte input hash, 8 byte output hash).
+key, 8 byte input hash, 8 byte output hash, and 8 byte proof of work [see
+section 6]). The other optimization is to keep an array of all public keys used,
+and then transactions can use an index to this array to refer to their public
+key, making a single-input single-output transaction 24 bytes (8 byte index, 8
+byte input hash, 8 byte output hash, 8 byte proof of work).
 
 \subsection{Issuance}
 Issuance can be done via the 256 byte miner address field in the block header.
@@ -236,6 +237,7 @@ do.
 
 This makes it so that miners have an incentive to include the entries with the
 most work in their blocks, so they don't have to do as much work to mine a
+block. The SumEntryWork will only be able to make up 10\% of the total work in a
 block.
 
 Instead of being economically expensive to execute a DOS attack, PADLOCK makes
@@ -251,8 +253,6 @@ transactions not being publicly disclosed on chain, it achieves a high level of
 privacy. DOS attacks can be countered by requiring proof of work to be submitted
 with each transaction. All this together creates a very robust base for a
 digital currency.
-
-\clearpage
 
 \printglossaries
 
