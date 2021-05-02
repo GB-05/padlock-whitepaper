@@ -219,6 +219,13 @@ coinfile would be able to see many transactions, but it would be incredibly
 hard to piece together the entire history of all the transactions. This
 drastically increases the privacy.
 
+However, this still has some pitfalls, as someone who recieves a transaction,
+and knows the sender, would be able to link their identity to their address, and
+would be able to see what address they sent their change to. This data could
+cause fungibility of that coin to be ruined if the person behind the address was
+deemed as undesirable
+
+
 \section{Anti-Spam Measures}
 It would be possible to execute a denial of service attack on PADLOCK by simply
 filling the \gls{mempool} with meaningless entries. It would then make it
