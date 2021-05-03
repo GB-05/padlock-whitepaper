@@ -45,8 +45,8 @@
     then a 8 byte anti-spam proof of work. These are the only details that need to
     be publicly disclosed on the blockchain in order for a transaction recipient to
     be able to verify that the coins they have received were not double spent. This
-    results in an incredibly small transaction size of only 72 bytes, allowing for
-    around 4x more throughput than bitcoin.
+    results in an incredibly small transaction size of only 68 bytes, allowing for
+    nearly 3x more throughput than bitcoin when using similar block size.
 \end{abstract}
 
 \section{Introduction}
@@ -63,16 +63,16 @@ There is then a public key and signature to go along with this. Together, these
 form an \textit{entry}.
 
 There are two optimizations that will be done to reduce transaction size
-further. The first optimization is BLS Signature Aggregation. Every signature
-in the block can be combined into one single 96 byte signature. This would
-reduce a single input, single output transaction to 64 bytes (48 byte public
-key, 8 byte input hash, 8 byte output hash). The other optimization is to use
-indexes to public keys and input hashes. There will be an array of all public
-keys used. Rather than using the entire public key in an entry, you can instead
-use an index to this array. The same goes for inputs. Each public key will have
-an associated array of input hashes, listed in chronological order. In the
-entry, you can use a 32 bit integer to refer to them, taking only 4 bytes
-instead of 8.
+further. The first optimization is BLS Signature Aggregation. Every signature in
+the block can be combined into one single 96 byte signature. This would reduce a
+single input, single output transaction to 72 bytes (48 byte public key, 8 byte
+input hash, 8 byte output hash, 8 byte proof of work [see section 6]). The other
+optimization is to use indexes to public keys and input hashes. There will be an
+array of all public keys used. Rather than using the entire public key in an
+entry, you can instead use an index to this array. The same goes for inputs.
+Each public key will have an associated array of input hashes, listed in
+chronological order. In the entry, you can use a 32 bit integer to refer to
+them, taking only 4 bytes instead of 8.
 
 \begin{verbatim}
 
@@ -256,8 +256,7 @@ do.
 
 This makes it so that miners have an incentive to include the entries with the
 most work in their blocks, so they don't have to do as much work to mine a
-block. The SumEntryWork will only be able to make up 10\% of the total work in a
-block.
+block. 
 
 Instead of being economically expensive to execute a DOS attack, PADLOCK makes
 it very computationally expensive.
