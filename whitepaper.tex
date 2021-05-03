@@ -57,29 +57,42 @@ that runs on top of the PADLOCK blockchain. This paper assumes a general
 understanding of how traditional cryptocurrencies work.
 
 \section{How Does PADLOCK Work?}
-PADLOCK uses digital signatures to facilitate the ownership of hashes. However,
-it does it differently to how most systems work. Only a hash of the signature is
-stored on-chain, and the public key is left off-chain. Alongside the signature
-hash is an input hash, an output hash, and a proof of work. These four together,
-make up an \textit{entry}.
+PADLOCK uses digital signatures to facilitate the ownership of hashes. Each
+"transaction" consists of an array of input hashes. The output is only one hash.
+There is then a public key and signature to go along with this. Together, these
+form an \textit{entry}.
+
+There are two optimizations that will be done to reduce transaction size
+further. The first optimization is BLS Signature Aggregation. Every signature
+in the block can be combined into one single 96 byte signature. This would
+reduce a single input, single output transaction to 64 bytes (48 byte public
+key, 8 byte input hash, 8 byte output hash). The other optimization is to use
+indexes to public keys and input hashes. There will be an array of all public
+keys used. Rather than using the entire public key in an entry, you can instead
+use an index to this array. The same goes for inputs. Each public key will have
+an associated array of input hashes, listed in chronological order. In the
+entry, you can use a 32 bit integer to refer to them, taking only 4 bytes
+instead of 8.
 
 \begin{verbatim}
 
 \\ Example written in Rust
 
-type Hash = [u8; 16];
+type Hash = [u8; 8];
+type PublicKey = [u8; 48]
 
 struct Entry {
-    input: Hash,
+    input_indexes: Vec<u32>,
     output: Hash,
-    signature_hash: Hash,
+    public_key: Option<BlsPublicKey>,
+    public_key_index: Option<u64>,
 }
 
 \end{verbatim}
 
-Anyone can submit any entry to the blockchain. They do not have to provide any
-sort of signature, just an object of three 16 byte arrays. This provides a base
-for creating a scalable, private, and non-double-spendable cryptocurrency.
+
+This provides a base for creating a scalable, private, and non-double-spendable
+cryptocurrency.
 
 \section{Creating Coins on PADLOCK}
 
@@ -152,9 +165,9 @@ infeasible for most people, and will only be done by a few.
 A better solution is to include as many transactions as possible in the limited
 amount of space each block has. In order to do that, you have to decrease the
 amount of storage each transaction takes up. Under PADLOCK, each transaction
-takes only 56 bytes minimum, compared to the ~190 byte minimum on bitcoin
+takes only 64 bytes minimum, compared to the ~190 byte minimum on bitcoin
 (including witness data). This results in nearly 3x more throughput when using
-the PADLOCK system.
+the PADLOCK blockchain.
 
 \subsection{How PADLOCK Solves the Double Spend Problem}
 PADLOCK solves it by having each transaction of a coin have it's input, output,
@@ -162,8 +175,7 @@ and signature each hashed, and then used as an entry on the PADLOCK blockchain.
 At a basic level, one can verify whether a coin has already been spent by
 hashing the input of the transaction sent to them, and then seeing if that input
 has been used on any entries in the blockchain. If it has, you would know that
-the coin has already been spent. Each entry would contain a public key, and a
-signature in order to verify the ownership of each hash.
+the coin has already been spent.
 
 There are two optimizations that will be done to reduce transaction size
 further.  The first optimization is BLS Signature Aggregation. Every signature
@@ -176,10 +188,10 @@ key, making a single-input single-output transaction 24 bytes (8 byte index, 8
 byte input hash, 8 byte output hash, 8 byte proof of work).
 
 \subsection{Issuance}
-Issuance can be done via the 256 byte miner address field in the block header.
+Issuance can be done via the 128 byte miner address field in the block header.
 Miners can feel free to include whatever they please in this field. Generally,
 though they'd want to include some sort of address. A coin could then allow
-using the miner address as an input to a transaction.
+using this as an input to a transaction.
 
 \section{ASIC Resistance}
 The proof of work algorithm used by PADLOCK should be \Gls{ASIC} resistant.
@@ -215,6 +227,13 @@ available. Instead, they are all in each coinfile. Someone who possess a
 coinfile would be able to see many transactions, but it would be incredibly
 hard to piece together the entire history of all the transactions. This
 drastically increases the privacy.
+
+However, this still has some pitfalls, as someone who recieves a transaction,
+and knows the sender, would be able to link their identity to their address, and
+would be able to see what address they sent their change to. This data could
+cause fungibility of that coin to be ruined if the person behind the address was
+deemed as undesirable
+
 
 \section{Anti-Spam Measures}
 It would be possible to execute a denial of service attack on PADLOCK by simply
