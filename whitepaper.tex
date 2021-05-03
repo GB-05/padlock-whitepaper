@@ -39,22 +39,23 @@
 \maketitle
 
 \begin{abstract}
-    PADLOCK is a blockchain based protocol that allows for the
-    creation of a scalable and private cryptocurrency. It achieves this by only
-    storing a hash of the input and the output, only a hash of the signature, and
-    then an 8 byte anti-spam proof of work. These are the only details that need to
-    be publicly disclosed on the blockchain in order for a transaction recipient to
-    be able to verify that the coins they have received were not double spent. This
-    results in an incredibly small transaction size of only 68 bytes, allowing for
-    nearly 3x more throughput than bitcoin when using a similar block size.
+    PADLOCK is a blockchain based protocol that allows for the creation of a
+    scalable and private cryptocurrency. It achieves this by only storing a hash
+    of the input and the output, only a hash of the signature, and then an 8
+    byte anti-spam proof of work. These are the only details that need to be
+    publicly disclosed on the blockchain in order for a transaction recipient to
+    be able to verify that the coins they have received were not double spent.
+    This results in an incredibly small transaction size of only 68 bytes (28
+    bytes in specific cases), allowing for nearly 3x more throughput than
+    bitcoin when using a similar block size.
 \end{abstract}
 
 \section{Introduction}
-PADLOCK is a blockchain based system that allows the
-ownership and transfer of hashes by key pairs. The purpose of this hash
-ownership is to provide the base for creating a scalable and private currency
-that runs on top of the PADLOCK blockchain. This paper assumes a general
-understanding of how traditional cryptocurrencies work.
+PADLOCK is a blockchain based system that allows the ownership and transfer of
+hashes by key pairs. The purpose of this hash ownership is to provide the base
+for creating a scalable and private currency that runs on top of the PADLOCK
+blockchain. This paper assumes a general understanding of how traditional
+cryptocurrencies work.
 
 \section{How Does PADLOCK Work?}
 PADLOCK uses digital signatures to facilitate the ownership of hashes. Each
@@ -79,7 +80,7 @@ them, taking only 4 bytes instead of 8.
 \\ Example written in Rust
 
 type Hash = [u8; 8];
-type PublicKey = [u8; 48]
+type BlsPublicKey = [u8; 48]
 
 struct Entry {
     input_indexes: Vec<u32>,
@@ -125,6 +126,8 @@ This coin can be split into multiple coins as well, specifying more than one
 public key as the new owner, each representing a fraction of the value of the
 original coin. If a sender sends their coin to someone, they can send a
 fraction of it to the receiver, and then the rest back to themselves as change.
+A good analogy of this would be splitting a gold coin in half, and giving half
+to someone as payment for a good/service, and keeping the other half.
 
 The \textit{coinfile} is a file that contains the history of a coin, back to
 it's minting.
@@ -160,7 +163,10 @@ One solution that has been tried is merely increasing the block size limit.
 This means more transaction can be included in the next block, getting rid of
 the bottleneck. This however, leads to centralization issues. Due to the
 increasing storage and bandwidth requirements, hosting a full node will become
-infeasible for most people, and will only be done by a few.
+infeasible for most people, and will only be done by a few. It also opens a
+possible attack vector, because when getting a transaction into a block is easy,
+a bad actor could fill blocks with meaningless transactions, and execute a DoS
+attack.
 
 A better solution is to include as many transactions as possible in the limited
 amount of space each block has. In order to do that, you have to decrease the
@@ -171,21 +177,11 @@ the PADLOCK blockchain.
 
 \subsection{How PADLOCK Solves the Double Spend Problem}
 PADLOCK solves it by having each transaction of a coin have it's input, output,
-and signature each hashed, and then used as an entry on the PADLOCK blockchain.
-At a basic level, one can verify whether a coin has already been spent by
-hashing the input of the transaction sent to them, and then seeing if that input
-has been used on any entries in the blockchain. If it has, you would know that
-the coin has already been spent.
-
-There are two optimizations that will be done to reduce transaction size
-further.  The first optimization is BLS Signature Aggregation. Every signature
-in the block can be combined into one single 96 byte signature. This would
-reduce a single input, single output transaction to 64 bytes (48 byte public
-key, 8 byte input hash, 8 byte output hash, and 8 byte proof of work [see
-section 6]). The other optimization is to keep an array of all public keys used,
-and then transactions can use an index to this array to refer to their public
-key, making a single-input single-output transaction 24 bytes (8 byte index, 8
-byte input hash, 8 byte output hash, 8 byte proof of work).
+and each hashed, and then used as an entry on the PADLOCK blockchain.  At a
+basic level, one can verify whether a coin has already been spent by hashing the
+input of the transaction sent to them, and then seeing if that input has been
+used on any entries in the blockchain. If it has, you would know that the coin
+has already been spent.
 
 \subsection{Issuance}
 Issuance can be done via the 128 byte miner address field in the block header.
@@ -232,7 +228,9 @@ However, this still has some pitfalls, as someone who recieves a transaction,
 and knows the sender, would be able to link their identity to their address, and
 would be able to see what address they sent their change to. This data could
 cause fungibility of that coin to be ruined if the person behind the address was
-deemed as undesirable
+deemed as undesirable. More research needs to be done on how other privacy
+features such as, ring signatures, and confidential transactions could be
+implemented in this design.
 
 
 \section{Anti-Spam Measures}
@@ -266,11 +264,11 @@ PADLOCK is a blockchain system designed to allow for a high throughput, and
 privacy. All the blockchain does is allow for checking if a coin has already
 been spent. This is the minimum for a functioning digital currency. Because of
 this, transactions take very little disk space, allowing a very high throughput.
-\Gls{ASIC} resistance is achieved through algorithm switching.  Due to
+\Gls{ASIC} resistance is achieved through the RandomX algorithm.  Due to
 transactions not being publicly disclosed on chain, it achieves a high level of
 privacy. DOS attacks can be countered by requiring proof of work to be submitted
 with each transaction. All this together creates a very robust base for a
-digital currency.
+digital and decentralized currency.
 
 \printglossaries
 
