@@ -52,27 +52,27 @@
 
 \section{Introduction}
 PADLOCK is a blockchain based system that allows the ownership and transfer of
-hashes by key pairs. The purpose of this hash ownership is to provide the base
+hashes by key pairs. The hash ownership provides the base
 for creating a scalable and private currency that runs on top of the PADLOCK
 blockchain. This paper assumes a general understanding of how traditional
 cryptocurrencies work.
 
 \section{How Does PADLOCK Work?}
 PADLOCK uses digital signatures to facilitate the ownership of hashes. Each
-"transaction" consists of an array of input hashes. The output is only one hash.
+"transaction" comprises an array of input hashes. The output is only one hash.
 There is then a public key and signature to go along with this. Together, these
 form an \textit{entry}.
 
 There are two optimizations that will be done to reduce transaction size
 further. The first optimization is BLS Signature Aggregation. Every signature in
-the block can be combined into one single 96 byte signature. This would reduce a
+the block can be combined into one 96 byte signature. This would reduce a
 single input, single output transaction to 72 bytes (48 byte public key, 8 byte
 input hash, 8 byte output hash, 8 byte proof of work [see section 6]). The other
 optimization is to use indexes to public keys and input hashes. There will be an
 array of all public keys used. Rather than using the entire public key in an
 entry, you can instead use an index to this array. The same goes for inputs.
 Each public key will have an associated array of input hashes, listed in
-chronological order. In the entry, you can use a 32 bit integer to refer to
+chronological order. In the entry, you can use a 32-bit integer to refer to
 them, taking only 4 bytes instead of 8.
 
 \begin{verbatim}
@@ -99,7 +99,7 @@ cryptocurrency.
 
 \subsection{What is a Coin}
 It's important to make a distinction when talking about coins in this context.
-Coins, in this context, do not refer to a unit of currency, but rather a chain
+Coins, in this context, do not refer to a unit of currency, but a chain
 of digital signatures. When you transfer a coin, you are appending a signature
 to this history. Each transaction has an \textit{input} and \textit{output}. The
 input is the hash of the transaction's sender, and the output is of the
@@ -160,7 +160,7 @@ of writing this, a low priority transaction takes approximately 4.5 USD, and in
 order to be in the next block, you must pay around 7.5 USD in fees.
 
 One solution that has been tried is merely increasing the block size limit.
-This means more transaction can be included in the next block, getting rid of
+This means that more transaction can be included in the next block, getting rid of
 the bottleneck. This however, leads to centralization issues. Due to the
 increasing storage and bandwidth requirements, hosting a full node will become
 infeasible for most people, and will only be done by a few. It also opens a
@@ -186,7 +186,7 @@ has already been spent.
 \subsection{Issuance}
 Issuance can be done via the 128 byte miner address field in the block header.
 Miners can feel free to include whatever they please in this field. Generally,
-though they'd want to include some sort of address. A coin could then allow
+though, they'd want to include some sort of address. A coin could then allow
 using this as an input to a transaction.
 
 \section{ASIC Resistance}
@@ -209,7 +209,7 @@ rely on ASIC or GPU mining.
 Privacy is achieved first by pseudonymity. Transactions are associated with
 someone's public key, rather than their real name. Of course, the issue there is
 that if someone managed to trace a public key back to a real person, that
-persons transactions would be publicly known.
+persons' transactions would be publicly known.
 
 A common way to combat that is by sending the change of each transaction to a
 new public key. For example, say Alice sends 20 coins to Bob, from her public
@@ -220,7 +220,7 @@ to tell which public key was Alice's, and which was Bob's.
 
 PADLOCK further combats this by not having every transaction publicly
 available. Instead, they are all in each coinfile. Someone who possess a
-coinfile would be able to see many transactions, but it would be incredibly
+coinfile could see many transactions, but it would be incredibly
 hard to piece together the entire history of all the transactions. This
 drastically increases the privacy.
 
@@ -229,7 +229,7 @@ and knows the sender, would be able to link their identity to their address, and
 would be able to see what address they sent their change to. This data could
 cause fungibility of that coin to be ruined if the person behind the address was
 deemed as undesirable. More research needs to be done on how other privacy
-features such as, ring signatures, and confidential transactions could be
+features such as ring signatures, and confidential transactions could be
 implemented in this design.
 
 
@@ -244,7 +244,7 @@ involve sending many gigabytes (possibly in the hundreds) worth of coinfiles to
 the miner, which would take up immense amounts of bandwidth and storage.
 
 Instead, on PADLOCK each transaction must submit a proof of work. The proof of
-work algorithm for this will be very similar to Hashcash. You must make an md5
+work algorithm for this will be very similar to Hashcash. You must make a md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
 This nonce can be up to 8 bytes, and is then stored with the entry. All of the
 work included in a block would then reduce the amount of work the miner has to
