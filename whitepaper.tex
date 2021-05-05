@@ -229,7 +229,7 @@ and knows the sender, would be able to link their identity to their address, and
 would be able to see what address they sent their change to. This data could
 cause fungibility of that coin to be ruined if the person behind the address was
 deemed as undesirable. More research needs to be done on how other privacy
-features such as ring signatures, and confidential transactions could be
+features, such as ring signatures and confidential transactions, could be
 implemented in this design.
 
 
@@ -243,8 +243,8 @@ Transaction fees are infeasible to implement under PADLOCK, however. It would
 involve sending many gigabytes (possibly in the hundreds) worth of coinfiles to
 the miner, which would take up immense amounts of bandwidth and storage.
 
-Instead, on PADLOCK each transaction must submit a proof of work. The proof of
-work algorithm for this will be very similar to Hashcash. You must make a md5
+Instead, on PADLOCK, each transaction is required to submit a proof of work. The proof of
+work algorithm for this will be very similar to Hashcash. You must make an md5
 hash of the entry with a nonce. The first N bits of the hash must be zeros.
 This nonce can be up to 8 bytes, and is then stored with the entry. All of the
 work included in a block would then reduce the amount of work the miner has to
